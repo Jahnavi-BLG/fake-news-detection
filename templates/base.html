@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FAKE NEWS DETECTION — Artificial Intelligence Project{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Modern Typography: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Unified Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="nav-brand">
+                <span class="brand-icon">⚡</span>
+                <span class="brand-text">AI Fake News Detector</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('home') }}" class="nav-link {% if active_page == 'home' %}active{% endif %}">Home</a></li>
+                <li><a href="{{ url_for('analyze') }}" class="nav-link {% if active_page == 'analyze' %}active{% endif %}">Analyze Article</a></li>
+                <li><a href="{{ url_for('how_it_works') }}" class="nav-link {% if active_page == 'how_it_works' %}active{% endif %}">How It Works</a></li>
+                <li><a href="{{ url_for('performance') }}" class="nav-link {% if active_page == 'performance' %}active{% endif %}">Performance</a></li>
+                <li><a href="{{ url_for('about') }}" class="nav-link {% if active_page == 'about' %}active{% endif %}">About & Scope</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-wrapper">
+        {% block content %}{% endblock %}
+
+        <!-- Unified Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p class="footer-title">Fake News Detection | Artificial Intelligence Project</p>
+            </div>
+        </footer>
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

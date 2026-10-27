@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}About & Scope — FAKE NEWS DETECTION AI PROJECT{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div class="project-badge">
+        <span class="badge-dot"></span> ACADEMIC SPECIFICATIONS
+    </div>
+    <h1 class="page-main-title">About the Project</h1>
+    <p class="page-sub-title">Detailed overview of objectives, transparent system limitations, future research scope, and technology stack.</p>
+</header>
+
+<main class="main-content">
+
+    <!-- About Section -->
+    <section class="card about-card">
+        <h3 class="section-title"><span class="title-icon">ℹ️</span> Project Summary</h3>
+        <p class="about-text">
+            This project demonstrates how Artificial Intelligence can be applied to Natural Language Processing and Machine Learning for automated news classification.
+        </p>
+    </section>
+
+    <!-- Project Objectives -->
+    <section class="card objectives-card">
+        <h3 class="section-title"><span class="title-icon">🎯</span> Project Objectives</h3>
+        <ul class="styled-list">
+            <li><span class="list-bullet">•</span> Detect patterns commonly associated with fake and real news.</li>
+            <li><span class="list-bullet">•</span> Apply Natural Language Processing to news text.</li>
+            <li><span class="list-bullet">•</span> Use Machine Learning for automated classification.</li>
+            <li><span class="list-bullet">•</span> Provide a simple interface for users to analyze articles.</li>
+            <li><span class="list-bullet">•</span> Demonstrate the practical application of Artificial Intelligence.</li>
+        </ul>
+    </section>
+
+    <!-- Limitations -->
+    <section class="card limitations-card">
+        <h3 class="section-title"><span class="title-icon">⚠️</span> System Limitations</h3>
+        <ul class="styled-list">
+            <li><span class="list-bullet">•</span> The system predicts based on patterns learned from its training dataset.</li>
+            <li><span class="list-bullet">•</span> It does not independently verify facts using external sources.</li>
+            <li><span class="list-bullet">•</span> Predictions may be less reliable for news from topics or sources that differ significantly from the training data.</li>
+            <li><span class="list-bullet">•</span> A prediction should not be treated as definitive proof that an article is true or false.</li>
+        </ul>
+    </section>
+
+    <!-- Future Scope -->
+    <section class="card scope-card">
+        <h3 class="section-title"><span class="title-icon">🚀</span> Future Scope</h3>
+        <ul class="styled-list">
+            <li><span class="list-bullet">•</span> Integration with real-time news sources.</li>
+            <li><span class="list-bullet">•</span> Fact-checking APIs.</li>
+            <li><span class="list-bullet">•</span> Multilingual fake news detection.</li>
+            <li><span class="list-bullet">•</span> Advanced NLP models.</li>
+            <li><span class="list-bullet">•</span> Browser extension for instant article analysis.</li>
+            <li><span class="list-bullet">•</span> Source credibility analysis.</li>
+        </ul>
+    </section>
+
+    <!-- Technologies Used -->
+    <section class="card tech-card">
+        <h3 class="section-title"><span class="title-icon">💻</span> Technologies Used</h3>
+        <p class="section-desc">Core technology stack powering model training and web presentation:</p>
+        
+        <div class="tech-grid">
+            <div class="tech-item"><span class="tech-icon">🐍</span> Python</div>
+            <div class="tech-item"><span class="tech-icon">🌶️</span> Flask</div>
+            <div class="tech-item"><span class="tech-icon">🤖</span> Machine Learning</div>
+            <div class="tech-item"><span class="tech-icon">🔤</span> Natural Language Processing</div>
+            <div class="tech-item"><span class="tech-icon">📈</span> TF-IDF</div>
+            <div class="tech-item"><span class="tech-icon">⚖️</span> Logistic Regression</div>
+            <div class="tech-item"><span class="tech-icon">⚙️</span> Scikit-learn</div>
+            <div class="tech-item"><span class="tech-icon">🌐</span> HTML</div>
+            <div class="tech-item"><span class="tech-icon">🎨</span> CSS</div>
+            <div class="tech-item"><span class="tech-icon">⚡</span> JavaScript</div>
+        </div>
+    </section>
+
+</main>
+{% endblock %}

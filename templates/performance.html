@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Model Performance — FAKE NEWS DETECTION AI PROJECT{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div class="project-badge">
+        <span class="badge-dot"></span> EMPIRICAL EVALUATION RESULTS
+    </div>
+    <h1 class="page-main-title">Model Evaluation & Metrics</h1>
+    <p class="page-sub-title">Quantitative performance evaluation metrics tested on 20% held-out test data.</p>
+</header>
+
+<main class="main-content">
+
+    <!-- Metrics Cards Grid -->
+    <section class="card performance-card">
+        <h3 class="section-title"><span class="title-icon">📊</span> Empirical Benchmark Metrics</h3>
+        <p class="section-desc">Logistic Regression classifier metrics trained with 50,000 TF-IDF features:</p>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span class="metric-label">Accuracy</span>
+                <span class="metric-value metric-indigo">98.73%</span>
+                <span class="metric-caption">Overall Correct Predictions</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Precision</span>
+                <span class="metric-value metric-emerald">98.43%</span>
+                <span class="metric-caption">Positive Predictive Value</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Recall</span>
+                <span class="metric-value metric-sky">99.25%</span>
+                <span class="metric-caption">True Positive Sensitivity</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">F1 Score</span>
+                <span class="metric-value metric-purple">98.84%</span>
+                <span class="metric-caption">Harmonic Mean of Precision & Recall</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visual Chart & Confusion Matrix Grid -->
+    <div class="dashboard-grid">
+        
+        <!-- Interactive Chart Card -->
+        <section class="card grid-card">
+            <h3 class="section-title"><span class="title-icon">📈</span> Metrics Visual Comparison</h3>
+            <p class="section-desc">Performance benchmark distribution across evaluation metrics:</p>
+            <div class="chart-wrapper">
+                <canvas id="metricsChart" height="240"></canvas>
+            </div>
+        </section>
+
+        <!-- Confusion Matrix Visualization Card -->
+        <section class="card grid-card">
+            <h3 class="section-title"><span class="title-icon">🎯</span> Confusion Matrix Analysis</h3>
+            <p class="section-desc">Test set confusion matrix breakdown:</p>
+            
+            <div class="confusion-matrix-container">
+                <div class="cm-grid">
+                    <div class="cm-cell cm-header">Actual \ Predicted</div>
+                    <div class="cm-cell cm-header">Pred FAKE (0)</div>
+                    <div class="cm-cell cm-header">Pred REAL (1)</div>
+                    
+                    <div class="cm-cell cm-row-header">Actual FAKE (0)</div>
+                    <div class="cm-cell cm-tn">
+                        <span class="cm-val">4,271</span>
+                        <span class="cm-lbl">True Negative</span>
+                    </div>
+                    <div class="cm-cell cm-fp">
+                        <span class="cm-val">68</span>
+                        <span class="cm-lbl">False Positive</span>
+                    </div>
+                    
+                    <div class="cm-cell cm-row-header">Actual REAL (1)</div>
+                    <div class="cm-cell cm-fn">
+                        <span class="cm-val">33</span>
+                        <span class="cm-lbl">False Negative</span>
+                    </div>
+                    <div class="cm-cell cm-tp">
+                        <span class="cm-val">4,354</span>
+                        <span class="cm-lbl">True Positive</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Detailed Evaluation Breakdown -->
+    <section class="card breakdown-card">
+        <h3 class="section-title"><span class="title-icon">🔍</span> Metric Definitions & Significance</h3>
+        
+        <div class="definitions-grid">
+            <div class="def-item">
+                <h4 class="def-title">Accuracy (98.73%)</h4>
+                <p class="def-text">Measures the proportion of total news articles (both Real and Fake) correctly classified by the model across the test set.</p>
+            </div>
+            <div class="def-item">
+                <h4 class="def-title">Precision (98.43%)</h4>
+                <p class="def-text">Measures out of all articles predicted as REAL NEWS, what percentage were genuinely authentic news stories.</p>
+            </div>
+            <div class="def-item">
+                <h4 class="def-title">Recall (99.25%)</h4>
+                <p class="def-text">Measures out of all actual real news articles present in the test set, what percentage were successfully identified by the AI model.</p>
+            </div>
+            <div class="def-item">
+                <h4 class="def-title">F1 Score (98.84%)</h4>
+                <p class="def-text">The harmonic mean combining Precision and Recall into a single robust benchmark metric, ensuring balanced model performance.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('metricsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Accuracy', 'Precision', 'Recall', 'F1 Score'],
+                datasets: [{
+                    label: 'Score (%)',
+                    data: [98.73, 98.43, 99.25, 98.84],
+                    backgroundColor: [
+                        'rgba(79, 70, 229, 0.85)',
+                        'rgba(16, 185, 129, 0.85)',
+                        'rgba(14, 165, 233, 0.85)',
+                        'rgba(168, 85, 247, 0.85)'
+                    ],
+                    borderColor: [
+                        '#4f46e5',
+                        '#10b981',
+                        '#0ea5e9',
+                        '#a855f7'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 95,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) { return value + '%'; }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

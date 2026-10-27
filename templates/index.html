@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Home — FAKE NEWS DETECTION AI PROJECT{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<header class="hero-header">
+    <div class="project-badge">
+        <span class="badge-dot"></span> ACADEMIC AI PROJECT DEMONSTRATION
+    </div>
+    <h1 class="main-title">FAKE NEWS DETECTION</h1>
+    <h2 class="sub-title-main">USING ARTIFICIAL INTELLIGENCE</h2>
+
+    <div class="hero-description-card">
+        <p class="hero-description">
+            "An Artificial Intelligence based system that analyzes news content and predicts whether it is likely to be <strong>REAL</strong> or <strong>FAKE</strong> using Natural Language Processing and Machine Learning."
+        </p>
+    </div>
+
+    <div class="hero-cta-group">
+        <a href="{{ url_for('analyze') }}" class="btn btn-primary btn-hero">
+            <span class="btn-icon">⚡</span> ANALYZE ARTICLE NOW
+        </a>
+        <a href="{{ url_for('how_it_works') }}" class="btn btn-secondary btn-hero">
+            <span class="btn-icon">⚙️</span> EXPLORE AI PIPELINE
+        </a>
+    </div>
+</header>
+
+<main class="main-content">
+
+    <!-- Quick Metrics Banner -->
+    <section class="quick-stats-banner">
+        <div class="quick-stat-card">
+            <span class="quick-stat-number">98.73%</span>
+            <span class="quick-stat-label">Model Test Accuracy</span>
+        </div>
+        <div class="quick-stat-card">
+            <span class="quick-stat-number">50,000</span>
+            <span class="quick-stat-label">TF-IDF Features</span>
+        </div>
+        <div class="quick-stat-card">
+            <span class="quick-stat-number">NLP + ML</span>
+            <span class="quick-stat-label">Classification Stack</span>
+        </div>
+        <div class="quick-stat-card">
+            <span class="quick-stat-number">&lt; 0.1s</span>
+            <span class="quick-stat-label">Inference Speed</span>
+        </div>
+    </section>
+
+    <!-- Visual Feature Cards Grid -->
+    <section class="features-grid">
+        
+        <!-- Card 1: Article Analyzer -->
+        <div class="feature-card">
+            <div class="feature-icon-wrapper icon-blue">
+                <span>🔎</span>
+            </div>
+            <h3 class="feature-card-title">Analyze News Article</h3>
+            <p class="feature-card-desc">
+                Paste any headline or article body to evaluate authenticity patterns using trained Logistic Regression classification.
+            </p>
+            <a href="{{ url_for('analyze') }}" class="feature-card-link">
+                Launch Article Analyzer ➔
+            </a>
+        </div>
+
+        <!-- Card 2: How It Works -->
+        <div class="feature-card">
+            <div class="feature-icon-wrapper icon-indigo">
+                <span>⚙️</span>
+            </div>
+            <h3 class="feature-card-title">How The AI Works</h3>
+            <p class="feature-card-desc">
+                Discover the end-to-end NLP preprocessing, TF-IDF vectorization, feature extraction, and decision steps.
+            </p>
+            <a href="{{ url_for('how_it_works') }}" class="feature-card-link">
+                View AI Architecture ➔
+            </a>
+        </div>
+
+        <!-- Card 3: Performance -->
+        <div class="feature-card">
+            <div class="feature-icon-wrapper icon-emerald">
+                <span>📊</span>
+            </div>
+            <h3 class="feature-card-title">Model Performance</h3>
+            <p class="feature-card-desc">
+                Review empirical test metrics including Accuracy (98.73%), Precision, Recall, and F1 Score on held-out test data.
+            </p>
+            <a href="{{ url_for('performance') }}" class="feature-card-link">
+                Explore Test Metrics ➔
+            </a>
+        </div>
+
+        <!-- Card 4: About & Scope -->
+        <div class="feature-card">
+            <div class="feature-icon-wrapper icon-purple">
+                <span>💡</span>
+            </div>
+            <h3 class="feature-card-title">Objectives & Scope</h3>
+            <p class="feature-card-desc">
+                Explore project objectives, transparent system limitations, future scope, and software technology stack.
+            </p>
+            <a href="{{ url_for('about') }}" class="feature-card-link">
+                Read Project Specs ➔
+            </a>
+        </div>
+
+    </section>
+
+    <!-- Visual AI Illustration Banner -->
+    <section class="card illustration-banner-card">
+        <div class="illustration-content">
+            <div class="illustration-text">
+                <span class="badge-mini">AI DISCRIMINATOR MODEL</span>
+                <h3 class="illustration-title">Pattern Recognition in News Text</h3>
+                <p class="illustration-desc">
+                    Our Logistic Regression model was trained on thousands of labeled news articles to learn linguistic syntax, vocabulary frequencies, and stylistic characteristics of reliable vs. deceptive media reporting.
+                </p>
+                <div class="illustration-tags">
+                    <span class="tag-pill">TF-IDF Vectorizer</span>
+                    <span class="tag-pill">Supervised Classifier</span>
+                    <span class="tag-pill">Flask Web Framework</span>
+                </div>
+            </div>
+            <div class="illustration-graphic">
+                <div class="ai-chip-visual">
+                    <div class="chip-inner">
+                        <span class="chip-icon">🤖</span>
+                        <span class="chip-label">AI ENGINE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+{% endblock %}

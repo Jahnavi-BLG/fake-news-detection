@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}How It Works — FAKE NEWS DETECTION AI PROJECT{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div class="project-badge">
+        <span class="badge-dot"></span> SYSTEM ARCHITECTURE & NLP PIPELINE
+    </div>
+    <h1 class="page-main-title">How It Works</h1>
+    <p class="page-sub-title">End-to-end Machine Learning and Natural Language Processing inference workflow.</p>
+</header>
+
+<main class="main-content">
+
+    <!-- Visual Process Flow Banner -->
+    <section class="card flow-card">
+        <h3 class="section-title"><span class="title-icon">⚙️</span> Process Flow Diagram</h3>
+        <p class="section-desc">Visual execution flow from raw text input to AI prediction decision:</p>
+        
+        <div class="pipeline-flow-container">
+            <div class="flow-card-item">
+                <div class="flow-step-badge">STEP 1</div>
+                <div class="flow-step-icon">📰</div>
+                <div class="flow-step-title">NEWS ARTICLE</div>
+                <div class="flow-step-sub">Raw Title & Body Text</div>
+            </div>
+            <div class="flow-connector">➔</div>
+
+            <div class="flow-card-item">
+                <div class="flow-step-badge">STEP 2</div>
+                <div class="flow-step-icon">🧹</div>
+                <div class="flow-step-title">TEXT PREPROCESSING</div>
+                <div class="flow-step-sub">Tokenization & Stopwords</div>
+            </div>
+            <div class="flow-connector">➔</div>
+
+            <div class="flow-card-item">
+                <div class="flow-step-badge">STEP 3</div>
+                <div class="flow-step-icon">📊</div>
+                <div class="flow-step-title">TF-IDF VECTORIZATION</div>
+                <div class="flow-step-sub">50,000 Feature Matrix</div>
+            </div>
+            <div class="flow-connector">➔</div>
+
+            <div class="flow-card-item">
+                <div class="flow-step-badge">STEP 4</div>
+                <div class="flow-step-icon">🧠</div>
+                <div class="flow-step-title">LOGISTIC REGRESSION</div>
+                <div class="flow-step-sub">Supervised Model</div>
+            </div>
+            <div class="flow-connector">➔</div>
+
+            <div class="flow-card-item flow-card-highlight">
+                <div class="flow-step-badge badge-primary">STEP 5</div>
+                <div class="flow-step-icon">🤖</div>
+                <div class="flow-step-title">AI PREDICTION</div>
+                <div class="flow-step-sub">Probability Score</div>
+            </div>
+            <div class="flow-connector">➔</div>
+
+            <div class="flow-card-item flow-card-result">
+                <div class="flow-step-badge badge-success">OUTPUT</div>
+                <div class="flow-step-icon">🎯</div>
+                <div class="flow-step-title">REAL / FAKE</div>
+                <div class="flow-step-sub">Final Decision Tag</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deep-Dive Detailed Breakdown Steps -->
+    <section class="architecture-steps-grid">
+        
+        <!-- Step 1 Card -->
+        <div class="card arch-card">
+            <div class="arch-card-header">
+                <span class="arch-num">01</span>
+                <div>
+                    <h3 class="arch-title">News Article Text Input</h3>
+                    <span class="arch-subtitle">User Submission Phase</span>
+                </div>
+            </div>
+            <p class="arch-body">
+                The user enters an article headline and text body through the web application interface. The combined text string is validated before being passed down the Natural Language Processing pipeline.
+            </p>
+        </div>
+
+        <!-- Step 2 Card -->
+        <div class="card arch-card">
+            <div class="arch-card-header">
+                <span class="arch-num">02</span>
+                <div>
+                    <h3 class="arch-title">Text Preprocessing & Cleaning</h3>
+                    <span class="arch-subtitle">Natural Language Processing</span>
+                </div>
+            </div>
+            <p class="arch-body">
+                The raw news text undergoes text normalization: converting text to lowercase, removing irrelevant punctuation, stripping numbers, and filtering out common English stop-words (such as <em>"the"</em>, <em>"is"</em>, <em>"at"</em>).
+            </p>
+        </div>
+
+        <!-- Step 3 Card -->
+        <div class="card arch-card">
+            <div class="arch-card-header">
+                <span class="arch-num">03</span>
+                <div>
+                    <h3 class="arch-title">TF-IDF Vectorization</h3>
+                    <span class="arch-subtitle">Feature Extraction Matrix</span>
+                </div>
+            </div>
+            <p class="arch-body">
+                The preprocessed text is transformed into a high-dimensional numerical feature vector using <strong>Term Frequency-Inverse Document Frequency (TF-IDF)</strong> based on a vocabulary of 50,000 learned features. Words frequent in an article but rare across general news receive higher weight scores.
+            </p>
+        </div>
+
+        <!-- Step 4 Card -->
+        <div class="card arch-card">
+            <div class="arch-card-header">
+                <span class="arch-num">04</span>
+                <div>
+                    <h3 class="arch-title">Logistic Regression Classifier</h3>
+                    <span class="arch-subtitle">Machine Learning Model</span>
+                </div>
+            </div>
+            <p class="arch-body">
+                The vectorized feature array is evaluated by the trained <strong>Logistic Regression</strong> model. The algorithm computes a weighted linear combination of word features and passes it through a sigmoid function to evaluate probability scores.
+            </p>
+        </div>
+
+        <!-- Step 5 & 6 Card -->
+        <div class="card arch-card arch-card-full">
+            <div class="arch-card-header">
+                <span class="arch-num arch-num-primary">05</span>
+                <div>
+                    <h3 class="arch-title">AI Prediction & Classification Output</h3>
+                    <span class="arch-subtitle">Real / Fake Decision Output</span>
+                </div>
+            </div>
+            <p class="arch-body">
+                If the model's computed probability score corresponds to class 1, the article is classified as <strong>REAL NEWS</strong>. If class 0, it is classified as <strong>FAKE NEWS</strong>. The result is immediately returned and displayed on the Web Dashboard.
+            </p>
+        </div>
+
+    </section>
+
+</main>
+{% endblock %}

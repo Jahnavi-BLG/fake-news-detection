@@ -1,0 +1,575 @@
+{% extends "base.html" %}
+
+{% block title %}Analyze Article — FAKE NEWS DETECTION AI PROJECT{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <div class="project-badge">
+        <span class="badge-dot"></span> INTERACTIVE AI CLASSIFIER
+    </div>
+    <h1 class="page-main-title">Article Verification Dashboard</h1>
+    <p class="page-sub-title">Enter headline and text content to run NLP feature extraction, probability estimation, and machine learning classification.</p>
+</header>
+
+<main class="main-content">
+
+    <!-- Detector Card -->
+    <section class="card detector-card">
+        <div class="card-header">
+            <div class="header-icon">🔎</div>
+            <div>
+                <h2 class="card-title">Analyze News Article</h2>
+                <p class="card-subtitle">Fill in the fields below or click a sample news example to test instantly.</p>
+            </div>
+        </div>
+
+        <!-- Try Sample News Feature -->
+        <div class="sample-news-box">
+            <span class="sample-news-title">💡 Try Sample News:</span>
+            <div class="sample-buttons-group">
+                <button type="button" class="btn btn-sample btn-sample-real" onclick="loadSample('real')">
+                    <span class="btn-icon">✓</span> REAL NEWS EXAMPLE
+                </button>
+                <button type="button" class="btn btn-sample btn-sample-fake" onclick="loadSample('fake')">
+                    <span class="btn-icon">⚠️</span> FAKE NEWS EXAMPLE
+                </button>
+                <button type="button" class="btn btn-sample btn-sample-tech" onclick="loadSample('tech')">
+                    <span class="btn-icon">🌐</span> TECH NEWS EXAMPLE
+                </button>
+            </div>
+        </div>
+
+        <!-- Extract from Web URL Feature -->
+        <div class="url-extractor-box">
+            <div class="url-extractor-toggle" onclick="toggleUrlInput()">
+                <span>🔗 Fetch News Content directly from a Web URL</span>
+                <span id="url-toggle-arrow">▼</span>
+            </div>
+            <div id="url-input-container" style="display: none;">
+                <div class="url-input-row">
+                    <input type="text" inputmode="url" id="news_url_input" class="url-input-field" placeholder="Paste full article URL (e.g. https://example.com/news/article)">
+                    <button type="button" class="btn-fetch" id="btn-fetch-url" onclick="fetchArticleFromUrl()">
+                        <span>📥 Extract Article</span>
+                    </button>
+                </div>
+                <div id="url-fetch-error" class="alert alert-warning" style="display:none; margin-top: 8px;"></div>
+            </div>
+        </div>
+
+        <form action="{{ url_for('analyze') }}" method="POST" id="newsForm" style="margin-top: 18px;">
+            <div class="form-group">
+                <label for="news_title" class="form-label">News Title / Headline (Optional)</label>
+                <input 
+                    type="text" 
+                    name="news_title" 
+                    id="news_title" 
+                    class="form-input"
+                    placeholder="Enter news article headline..."
+                    value="{{ news_title if news_title else '' }}"
+                    oninput="updateLiveStats()"
+                >
+            </div>
+
+            <div class="form-group">
+                <div class="form-label-row">
+                    <label for="news_text" class="form-label">News Article Text</label>
+                    <span class="live-counter-badge" id="live-counter">Words: 0 | Chars: 0</span>
+                </div>
+                <textarea 
+                    name="news_text" 
+                    id="news_text" 
+                    rows="9" 
+                    placeholder="Paste news body content, snippet, or full article text here..."
+                    oninput="updateLiveStats()"
+                >{{ news_text if news_text else '' }}</textarea>
+            </div>
+
+            <!-- Validation Error -->
+            {% if error %}
+            <div class="alert alert-warning" id="error-section">
+                <span class="alert-icon">⚠️</span>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary btn-large">
+                    <span class="btn-icon">⚡</span> CHECK NEWS
+                </button>
+                <button type="button" class="btn btn-secondary btn-large" onclick="clearForm()">
+                    <span class="btn-icon">🗑️</span> CLEAR
+                </button>
+            </div>
+        </form>
+
+        <!-- Prediction Result Display -->
+        {% if result %}
+        <div class="result-wrapper" id="result-section">
+            <div class="result-header-row">
+                <span class="result-header-label">AI PREDICTION ANALYSIS</span>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-sm btn-outline-copy" onclick="copyReport()">📋 Copy Report</button>
+                    <button type="button" class="btn btn-sm btn-outline-download" onclick="downloadReport()">📥 Download Report</button>
+                </div>
+            </div>
+
+            {% if result == 'REAL NEWS' %}
+            <div class="result-banner result-real">
+                <div class="result-badge-icon">✅</div>
+                <div class="result-text-group">
+                    <div class="result-status-tag">MODEL DECISION</div>
+                    <div class="result-main-label">REAL NEWS</div>
+                    <p class="result-description">The machine learning model predicts this article is <strong>Authentic</strong> with high statistical confidence.</p>
+                </div>
+                {% if confidence %}
+                <div class="confidence-badge badge-real-conf">
+                    <span class="conf-value">{{ confidence }}%</span>
+                    <span class="conf-label">Confidence</span>
+                </div>
+                {% endif %}
+            </div>
+            {% elif result == 'FAKE NEWS' %}
+            <div class="result-banner result-fake">
+                <div class="result-badge-icon">🚨</div>
+                <div class="result-text-group">
+                    <div class="result-status-tag">MODEL DECISION</div>
+                    <div class="result-main-label">FAKE NEWS</div>
+                    <p class="result-description">Caution: The machine learning model predicts this article is <strong>Deceptive or Fake</strong> based on vocabulary features.</p>
+                </div>
+                {% if confidence %}
+                <div class="confidence-badge badge-fake-conf">
+                    <span class="conf-value">{{ confidence }}%</span>
+                    <span class="conf-label">Confidence</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Probability Distribution Bars -->
+            {% if real_prob is not none and fake_prob is not none %}
+            <div class="probability-card">
+                <h4 class="prob-title">Probability Breakdown</h4>
+                
+                <div class="prob-bar-wrapper">
+                    <div class="prob-row">
+                        <span class="prob-label">Real News Probability: <strong>{{ real_prob }}%</strong></span>
+                    </div>
+                    <div class="prob-track">
+                        <div class="prob-fill fill-real" style="width: {{ real_prob }}%;"></div>
+                    </div>
+                </div>
+
+                <div class="prob-bar-wrapper">
+                    <div class="prob-row">
+                        <span class="prob-label">Fake News Probability: <strong>{{ fake_prob }}%</strong></span>
+                    </div>
+                    <div class="prob-track">
+                        <div class="prob-fill fill-fake" style="width: {{ fake_prob }}%;"></div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if signals %}
+            <div class="keywords-card">
+                <h4 class="prob-title">Credibility Signals Considered</h4>
+                <div class="keyword-tags">
+                    {% for sig in signals %}<span class="kw-tag kw-real"><span class="kw-name">{{ sig }}</span></span>{% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Sensationalism & Clickbait Risk Widget -->
+            {% if linguistics %}
+            <div class="sensationalism-card">
+                <div class="sens-header-row">
+                    <h4 class="sens-title">🚨 Sensationalism & Clickbait Risk Analysis</h4>
+                    <span class="sens-badge {% if linguistics.sensationalism_level == 'High' %}sens-badge-high{% elif linguistics.sensationalism_level == 'Moderate' %}sens-badge-moderate{% else %}sens-badge-low{% endif %}">
+                        {{ linguistics.sensationalism_level }} Risk ({{ linguistics.sensationalism_score }}%)
+                    </span>
+                </div>
+                <p class="section-desc" style="margin-bottom: 0;">Linguistic evaluation of capitalization intensity, punctuation emphasis, and urgent trigger patterns:</p>
+                
+                <div class="sens-metrics-grid">
+                    <div class="sens-metric-item">
+                        <span class="sens-metric-val">{{ linguistics.caps_word_count }} <small>({{ linguistics.caps_ratio }}%)</small></span>
+                        <span class="sens-metric-lbl">ALL-CAPS Words</span>
+                    </div>
+                    <div class="sens-metric-item">
+                        <span class="sens-metric-val">{{ linguistics.exclamation_count }}</span>
+                        <span class="sens-metric-lbl">Exclamation Marks (!)</span>
+                    </div>
+                    <div class="sens-metric-item">
+                        <span class="sens-metric-val">{{ linguistics.question_count }}</span>
+                        <span class="sens-metric-lbl">Question Marks (?)</span>
+                    </div>
+                </div>
+
+                {% if linguistics.trigger_words_found %}
+                <div style="margin-top: 12px;">
+                    <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Detected Sensationalist Trigger Terms:</span>
+                    <div class="triggers-list">
+                        {% for trigger in linguistics.trigger_words_found %}
+                        <span class="trigger-tag">⚠️ {{ trigger }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Article Analytics Grid -->
+            {% if stats %}
+            <div class="analytics-grid">
+                <div class="analytic-item">
+                    <span class="analytic-icon">📝</span>
+                    <span class="analytic-val">{{ stats.word_count }}</span>
+                    <span class="analytic-lbl">Words</span>
+                </div>
+                <div class="analytic-item">
+                    <span class="analytic-icon">🔤</span>
+                    <span class="analytic-val">{{ stats.char_count }}</span>
+                    <span class="analytic-lbl">Characters</span>
+                </div>
+                <div class="analytic-item">
+                    <span class="analytic-icon">⏱️</span>
+                    <span class="analytic-val">{{ stats.reading_time }} min</span>
+                    <span class="analytic-lbl">Reading Time</span>
+                </div>
+                <div class="analytic-item">
+                    <span class="analytic-icon">🔑</span>
+                    <span class="analytic-val">{{ stats.unique_words }}</span>
+                    <span class="analytic-lbl">Unique Words</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Top TF-IDF Key Terms -->
+            {% if top_keywords %}
+            <div class="keywords-card">
+                <h4 class="prob-title">Top Influential Features Extracted (TF-IDF)</h4>
+                <div class="keyword-tags">
+                    {% for kw in top_keywords %}
+                    <span class="kw-tag {% if kw.lean == 'REAL' %}kw-real{% else %}kw-fake{% endif %}">
+                        <span class="kw-name">{{ kw.word }}</span>
+                        <span class="kw-weight">{{ kw.weight }}</span>
+                        <span class="kw-badge">{{ kw.lean }}</span>
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="result-disclaimer">
+                <span>ℹ️ Academic Note: Model inference is generated via TF-IDF matrix transformation and Logistic Regression decision boundaries.</span>
+            </div>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Developer REST API Info Card -->
+    <section class="card api-card">
+        <h3 class="section-title"><span class="title-icon">⚡</span> Developer REST API Access</h3>
+        <p class="section-desc">Integrate this Fake News AI model into external apps, mobile clients, or browser extensions via JSON endpoint:</p>
+        
+        <div class="code-snippet">
+            <strong>Endpoint:</strong> <code>POST /api/predict</code><br>
+            <strong>Payload (JSON):</strong> <code>{"title": "Headline", "text": "Article content..."}</code><br><br>
+            <strong>Example cURL:</strong><br>
+            curl -X POST http://localhost:5000/api/predict \<br>
+            &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+            &nbsp;&nbsp;-d '{"title": "Global Climate Summit", "text": "Delegates reached agreement today..."}'
+        </div>
+    </section>
+
+    <!-- Prediction History Section -->
+    <section class="card history-card">
+        <div class="history-header">
+            <h3 class="section-title"><span class="title-icon">📜</span> Session Predictions History</h3>
+            <button type="button" class="btn btn-clear-history" onclick="clearHistory()">Clear History</button>
+        </div>
+        <p class="section-desc">Session history of analyzed articles during your current browser session:</p>
+        <div id="history-container">
+            <p class="history-empty" id="history-empty-msg">No recent predictions in this session yet.</p>
+            <div class="history-list" id="history-list"></div>
+        </div>
+    </section>
+
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Sample Articles Data
+    const SAMPLES = {
+        real: {
+            title: "Global Climate Summit Concludes with Landmark Renewable Energy Agreement",
+            text: "Delegates from over 190 nations reached a landmark agreement today at the international climate conference. The new framework commits member countries to accelerating clean energy transition goals, expanding solar and wind infrastructure investments, and phasing out coal subsidies over the next decade. Industry analysts described the policy accord as a significant structural shift in global environmental governance."
+        },
+        fake: {
+            title: "BREAKING: Scientists Discover Secret Island Inhabited By Living Dinosaurs",
+            text: "Unbelievable secret reports confirm that a covert team of researchers stumbled upon a hidden volcanic island in the South Pacific where prehistoric dinosaurs survived extinction. Government officials have reportedly classified all radar footage and restricted air space over the area to prevent the public from discovering the truth. Share this shock report before it gets taken down by mainstream media!"
+        },
+        tech: {
+            title: "Artificial Intelligence Breakthrough Accelerates Medical Diagnostics Speed",
+            text: "Researchers today unveiled a new diagnostic machine learning algorithm capable of detecting complex medical anomalies in radiological scans with unprecedented speed. Published in a peer-reviewed medical journal, the study demonstrates that automated computer vision models can assist clinical radiologists by triaging urgent cases faster, paving the way for improved patient outcomes in emergency care."
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const u = document.getElementById('news_url_input');
+        if (u) u.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); fetchArticleFromUrl(); } });
+    });
+
+    function toggleUrlInput() {
+        const container = document.getElementById('url-input-container');
+        const arrow = document.getElementById('url-toggle-arrow');
+        if (container.style.display === 'none' || container.style.display === '') {
+            container.style.display = 'block';
+            arrow.textContent = '▲';
+        } else {
+            container.style.display = 'none';
+            arrow.textContent = '▼';
+        }
+    }
+
+    async function fetchArticleFromUrl() {
+        const urlInput = document.getElementById('news_url_input');
+        const errorDiv = document.getElementById('url-fetch-error');
+        const btn = document.getElementById('btn-fetch-url');
+        const url = urlInput.value.trim();
+
+        errorDiv.style.display = 'none';
+
+        if (!url) {
+            errorDiv.textContent = 'Please enter a valid website URL.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳ Extracting...</span>';
+
+        try {
+            const response = await fetch('/api/fetch-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                errorDiv.textContent = data.error || 'Failed to extract content from URL.';
+                errorDiv.style.display = 'block';
+            } else {
+                if (data.title) {
+                    document.getElementById('news_title').value = data.title;
+                }
+                if (data.text) {
+                    document.getElementById('news_text').value = data.text;
+                }
+                updateLiveStats();
+                toggleUrlInput();
+            }
+        } catch (err) {
+            errorDiv.textContent = 'Network error fetching URL: ' + err.message;
+            errorDiv.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<span>📥 Extract Article</span>';
+        }
+    }
+
+    function loadSample(type) {
+        const sample = SAMPLES[type];
+        if (sample) {
+            document.getElementById('news_title').value = sample.title;
+            document.getElementById('news_text').value = sample.text;
+            updateLiveStats();
+            document.getElementById('newsForm').submit();
+        }
+    }
+
+    function clearForm() {
+        document.getElementById('news_title').value = '';
+        document.getElementById('news_text').value = '';
+        updateLiveStats();
+        const resultBox = document.getElementById('result-section');
+        if (resultBox) {
+            resultBox.style.display = 'none';
+        }
+        const errorBox = document.getElementById('error-section');
+        if (errorBox) {
+            errorBox.style.display = 'none';
+        }
+    }
+
+    function updateLiveStats() {
+        const title = document.getElementById('news_title').value || '';
+        const text = document.getElementById('news_text').value || '';
+        const combined = (title + ' ' + text).trim();
+        
+        const words = combined ? combined.split(/\s+/).filter(w => w.length > 0).length : 0;
+        const chars = combined.length;
+
+        const counterElem = document.getElementById('live-counter');
+        if (counterElem) {
+            counterElem.textContent = `Words: ${words} | Chars: ${chars}`;
+        }
+    }
+
+    function copyReport() {
+        const resultLabel = {{ (result or '')|tojson }};
+        const conf = {{ (confidence or '')|tojson }};
+        const realP = {{ (real_prob if real_prob is not none else '')|tojson }};
+        const fakeP = {{ (fake_prob if fake_prob is not none else '')|tojson }};
+        const title = document.getElementById('news_title').value;
+        const text = document.getElementById('news_text').value;
+
+        const report = `[AI FAKE NEWS DETECTION REPORT]
+Result: ${resultLabel}
+Confidence: ${conf}%
+Real Probability: ${realP}%
+Fake Probability: ${fakeP}%
+Headline: ${title || 'N/A'}
+Article Snippet: ${text.substring(0, 150)}...
+---
+Analyzed using Logistic Regression + TF-IDF Vectorization`;
+
+        navigator.clipboard.writeText(report).then(() => {
+            alert('Full AI Inspection Report copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    }
+
+    function downloadReport() {
+        const resultLabel = {{ (result or '')|tojson }};
+        const conf = {{ (confidence or '')|tojson }};
+        const realP = {{ (real_prob if real_prob is not none else '')|tojson }};
+        const fakeP = {{ (fake_prob if fake_prob is not none else '')|tojson }};
+        const title = document.getElementById('news_title').value;
+        const text = document.getElementById('news_text').value;
+        const now = new Date().toISOString();
+
+        const report = `=====================================================
+         AI FAKE NEWS DETECTION FORENSIC REPORT
+=====================================================
+Date & Time        : ${now}
+Model Inference    : ${resultLabel}
+Confidence Score   : ${conf}%
+Real Probability   : ${realP}%
+Fake Probability   : ${fakeP}%
+
+-----------------------------------------------------
+ARTICLE DETAILS
+-----------------------------------------------------
+Headline:
+${title || 'N/A'}
+
+Content:
+${text}
+
+-----------------------------------------------------
+SYSTEM SPECIFICATIONS
+-----------------------------------------------------
+Algorithm          : Logistic Regression Classifier
+Vectorization      : TF-IDF (50,000 Learned Features)
+Inference Pipeline : Natural Language Processing (NLP)
+=====================================================`;
+
+        const blob = new Blob([report], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fake-news-report-${Date.now()}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Prediction History Management via sessionStorage
+    const currentResult = {{ (result or none)|tojson }};
+    const currentTitle = {{ (news_title or none)|tojson }};
+    const currentText = {{ (news_text or none)|tojson }};
+
+    function getHistory() {
+        const historyJson = sessionStorage.getItem('fake_news_history');
+        return historyJson ? JSON.parse(historyJson) : [];
+    }
+
+    function saveHistory(history) {
+        sessionStorage.setItem('fake_news_history', JSON.stringify(history));
+    }
+
+    function renderHistory() {
+        const history = getHistory();
+        const container = document.getElementById('history-list');
+        const emptyMsg = document.getElementById('history-empty-msg');
+
+        if (!container) return;
+
+        if (history.length === 0) {
+            container.innerHTML = '';
+            if (emptyMsg) emptyMsg.style.display = 'block';
+            return;
+        }
+
+        if (emptyMsg) emptyMsg.style.display = 'none';
+        container.innerHTML = history.map((item) => `
+            <div class="history-item">
+                <div class="history-info">
+                    <span class="history-title">${escapeHtml(item.title)}</span>
+                    <span class="history-time">🕒 ${item.time}</span>
+                </div>
+                <span class="history-badge ${item.result === 'REAL NEWS' ? 'badge-real' : 'badge-fake'}">
+                    ${item.result === 'REAL NEWS' ? '✅ REAL NEWS' : '🚨 FAKE NEWS'}
+                </span>
+            </div>
+        `).join('');
+    }
+
+    function clearHistory() {
+        sessionStorage.removeItem('fake_news_history');
+        renderHistory();
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateLiveStats();
+        if (currentResult) {
+            let history = getHistory();
+            
+            let titleDisplay = currentTitle && currentTitle.trim() !== '' 
+                ? currentTitle 
+                : (currentText ? currentText.substring(0, 50) + '...' : 'Untitled Article');
+
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+            const isDuplicate = history.length > 0 && 
+                                history[0].title === titleDisplay && 
+                                history[0].result === currentResult;
+
+            if (!isDuplicate) {
+                history.unshift({
+                    title: titleDisplay,
+                    result: currentResult,
+                    time: timeStr
+                });
+                if (history.length > 10) history.pop();
+                saveHistory(history);
+            }
+        }
+        renderHistory();
+    });
+</script>
+{% endblock %}
